@@ -1,4 +1,4 @@
-import { Handler } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { MarkService } from '../../services/marks.service';
 import { MarkRepository } from '../../repositories/mark.repository';
 import { catchError } from '../../utils/catch-errors.util/catch-erros.utils';
@@ -12,7 +12,7 @@ const markService = new MarkService({ markRepository });
 const ajv = new Ajv();
 const validate: ValidateFunction = ajv.compile(schema);
 
-export const handler: Handler = async (event: any) => {
+export const handler = async (event: APIGatewayProxyEvent) => {
   try {
     const body = JSON.parse(event.body) as RequestBody;
 

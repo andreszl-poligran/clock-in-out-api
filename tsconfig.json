@@ -10,7 +10,7 @@
     "outDir": ".build",
     "moduleResolution": "node",
     "lib": ["es6"],
-    "types": ["node", "jest"],
+    "types": ["node"],
     "rootDir": "./"
   },
   "include": ["src/**/*.ts"],

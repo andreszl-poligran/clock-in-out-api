@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Handler } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { MarkService } from '../../services/marks.service';
 import { MarkRepository } from '../../repositories/mark.repository';
 import { catchError } from '../../utils/catch-errors.util/catch-erros.utils';
@@ -6,7 +6,7 @@ import { catchError } from '../../utils/catch-errors.util/catch-erros.utils';
 const markRepository = new MarkRepository();
 const markService = new MarkService({ markRepository });
 
-export const handler: Handler = async (event: APIGatewayEvent) => {
+export const handler = async (event: APIGatewayProxyEvent) => {
   try {
     const page = parseInt(event.queryStringParameters?.page || '1');
     const pageSize = parseInt(event.queryStringParameters?.pageSize || '1000');
