@@ -3,22 +3,13 @@ service: clock-in-out
 provider:
   name: aws
   runtime: nodejs18.x
-  iam:
-  role:
-    statements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-          - dynamodb:Scan
-          - dynamodb:GetItem
-          - dynamodb:PutItem
-          - dynamodb:UpdateItem
-          - dynamodb:DeleteItem
-          - s3:GetObject
-          - "s3:PutObject"
-          - lambda:InvokeFunction
-        Resource:
-          - "*"
+   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - "*"
+        
 
 
 custom: ${file(.env.yml)}
