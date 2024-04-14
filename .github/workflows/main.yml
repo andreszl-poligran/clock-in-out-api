@@ -33,7 +33,7 @@ jobs:
       run: npm install
 
     - name: Serverless Deploy to Dev
-      run: npx sls deploy --stage prod
+      run: npx sls deploy --stage dev
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
