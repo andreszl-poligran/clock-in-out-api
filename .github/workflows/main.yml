@@ -1,0 +1,54 @@
+name: clock-in-out-api
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Remove existing node_modules and lock files
+      run: |
+        rm -rf node_modules package-lock.json yarn.lock
+        npm cache clean --force
+
+    - name: Install dependencies
+      run: npm install --omit=dev
+
+    - name: Create temporary .env.yml
+      run: |
+        echo "serverless-offline:" >> .env.yml
+        echo "  httpPort: 3000" >> .env.yml
+        echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID" >> .env.yml
+      env:
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
+    - name: Create Node.js directory and copy dependencies
+      run: |
+        mkdir nodejs
+        cp -r ./node_modules ./package.json ./package-lock.json ./nodejs
+
+    - name: Zip dependencies
+      run: zip -r dependencies.zip nodejs
+
+    - name: Publish Lambda Layer
+      run: |
+        aws lambda publish-layer-version \
+          --layer-name clock-in-out \
+          --description "clock-in-out" \
+          --zip-file fileb://dependencies.zip \
+          --compatible-runtimes nodejs20.x
+
+    - name: Serverless Deploy to Dev
+      run: npx sls deploy --stage prod
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

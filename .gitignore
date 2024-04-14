@@ -1,0 +1,9 @@
+.env
+.serverless
+log
+node_modules
+coverage
+.build
+.env.yml
+dependencies.zip
+nodejs

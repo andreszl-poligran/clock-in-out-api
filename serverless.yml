@@ -1,0 +1,76 @@
+service: clock-in-out
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+custom: ${file(.env.yml)}
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  exclude:
+    - coverage/**
+    - log/**
+    - '**/*.test.ts'
+    - '**/*.ts'
+    - '**/*.test.js'
+    - 'node_modules/**'
+    - 'dependencies.zip'
+    - 'nodejs/**'
+
+  include:
+    - '**/*.html'
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-dynamodb-local
+
+functions:
+  get-entry-and-exit-marks:
+    handler: src/handlers/get-entry-and-exit-marks/get-entry-and-exit-marks.handler
+    layers: arn:aws:lambda:us-east-1:${self:custom.AWS_ACCOUNT_ID}:layer:clock-in-out:1
+    memorySize: 128
+    timeout: 30
+    runtime: nodejs18.x
+    events:
+      - http:
+          path: /get-entry-and-exit-marks
+          method: get        
+          cors:
+            origin: '*'
+            headers: '*'
+            methods: 'GET'
+            allowCredentials: true
+
+  create-entry-and-exit-marks:
+    handler: src/handlers/create-entry-and-exit-marks/create-entry-and-exit-marks.handler
+    layers: arn:aws:lambda:us-east-1:${self:custom.AWS_ACCOUNT_ID}:layer:clock-in-out:1
+    memorySize: 128
+    timeout: 30
+    runtime: nodejs18.x
+    events:
+      - http:
+          path: /
+          method: post        
+          cors:
+            origin: '*'
+            headers: '*'
+            methods: 'POST'
+            allowCredentials: true
+
+resources:
+  Resources:
+    MyDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: clock-in-out-marks
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
