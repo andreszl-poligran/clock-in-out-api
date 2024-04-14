@@ -2,7 +2,7 @@ service: clock-in-out
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs18.x
 
 custom: ${file(.env.yml)}
 
