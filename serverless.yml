@@ -3,7 +3,7 @@ service: clock-in-out
 provider:
   name: aws
   runtime: nodejs18.x
-   iamRoleStatements:
+  iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:*
