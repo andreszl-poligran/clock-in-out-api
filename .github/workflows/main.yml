@@ -12,8 +12,13 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 20
 
     - name: Remove existing node_modules and lock files
       run: |
@@ -43,7 +48,7 @@ jobs:
 
     - name: Zip dependencies
       run: zip -r dependencies.zip nodejs
-
+      
     - name: Publish Lambda Layer
       run: |
         aws lambda publish-layer-version \
@@ -51,6 +56,9 @@ jobs:
           --description "clock-in-out" \
           --zip-file fileb://dependencies.zip \
           --compatible-runtimes nodejs20.x
+
+    - name: Install dependencies
+      run: npm install
 
     - name: Serverless Deploy to Dev
       run: npx sls deploy --stage prod
