@@ -1,16 +1,17 @@
 service: clock-in-out
 
+# Configuration of the AWS provider
 provider:
   name: aws
   runtime: nodejs18.x
   iamRoleStatements:
+    # Allow all actions on DynamoDB
     - Effect: Allow
       Action:
         - dynamodb:*
+      # Allow access to all DynamoDB resources
       Resource:
         - "*"
-        
-
 
 custom: ${file(.env.yml)}
 

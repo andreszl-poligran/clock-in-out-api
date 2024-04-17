@@ -1,26 +1,23 @@
 import constants from '../../constants';
 import errors from '../../data/errors.data';
 
-export const catchError = (error: any) => {
-  console.log('catch error', error);
-  let errorType = error.constructor.name;
-  let err = errors[errorType];
+// Function to catch and handle errors
+export const catchError = (error: any) => { 
+  // Log the unexpected error
+  console.error('Unexpected error', error);
 
-  if (err) {
-    return {
-      headers: constants.cors.HEADERS,
-      statusCode: err.code,
-      error: err.message,
-      details: err.details || undefined,
-      body: JSON.stringify({ message: err.message }),
-    };
-  }
+  // Determine the error type
+  let errorType = error.constructor.name || 'DefaultError';
 
+  // Retrieve error details from predefined error data
+  let err = errors[errorType] ? errors[errorType] : errors['DefaultError'];
+
+  // Construct response object with error details
   return {
-    headers: constants.cors.HEADERS,
-    statusCode: 500,
-    error: "Internal server error",
-    body: "Internal server error",
+    headers: constants.cors.HEADERS,  // Set response headers
+    statusCode: err.code,  // Set status code
+    error: err.message,  // Set error message
+    details: err.message,  // Set error details
+    body: JSON.stringify({ message: err.message }),  // Construct response body
   };
 };
-
