@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodb_data:/home/dynamodblocal/data
+
+  api:
+    build: .
+    container_name: serverless-api
+    ports:
+      - "3002:3002"
+    depends_on:
+      - dynamodb
+    environment:
+      - DYNAMODB_ENDPOINT=http://dynamodb:8000
+      
+volumes:
+  dynamodb_data:
